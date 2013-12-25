@@ -45,6 +45,12 @@ class FastFW(Fast):
     
     def wan_cutdown(self):
         html = self.gethtml('/userRpm/StatusRpm.htm?Disconnect=%E6%96%AD%20%E7%BA%BF1')
+    
+    def wan_connect(self):
+        pass
+    
+    def wan_reconnect(self):
+        pass
 print FastFW('notcmcc', '1234567809', routerport=8765).get_wan()
 
 
