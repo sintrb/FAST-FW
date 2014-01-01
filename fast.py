@@ -19,7 +19,7 @@ class Router(object):
         self.authstring = 'Basic %s'%base64.b64encode('%s:%s'%(self.adminname, self.adminpass))
     def gethtml(self, path):
         url = 'http://%s:%d%s'%(self.routerip, self.routerport, path)
-        print url
+#         print url
         req = urllib2.Request(url)
         req.add_header('Authorization', self.authstring)
         return urllib2.urlopen(req).read()
@@ -33,12 +33,16 @@ class FastFW(Fast):
     def get_val(self, s):
         return eval(s)
     
-    def get_wan(self):
-        if not self.wan:
-            html = self.gethtml('/userRpm/StatusRpm.htm')
+   
+
+class FastFW100(FastFW):
+    def get_wan(self, html=None):
+        if not self.wan or html:
+            if not html:
+                html = self.gethtml('/userRpm/StatusRpm.htm')
             arr = self.get_val(re.findall('wanPara = new Array\(([^\0]*?)\);', html, re.IGNORECASE)[0].replace('\r','').replace('\n',''))
-            print arr
-            self.wan = {'mac':arr[1],'ip':arr[2], 'mask':arr[4], 'gateway':arr[7], 'dns1':arr[11], 'dns2':arr[12]}
+#             print arr
+            self.wan = {'mac':arr[1],'ip':arr[2], 'mask':arr[4], 'gateway':arr[7], 'dns':arr[11]}
         return self.wan
     def get_ip(self):
         return self.get_wan()['ip']
@@ -50,8 +54,9 @@ class FastFW(Fast):
         pass
     
     def wan_reconnect(self):
-        pass
-print FastFW('notcmcc', '1234567809', routerport=8765).get_wan()
+        return self.wan_cutdown() and self.wan_connect()
+
+print FastFW100('notcmcc', '1234567809', routerport=8765).get_ip()
 
 
 
