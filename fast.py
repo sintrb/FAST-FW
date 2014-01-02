@@ -30,33 +30,60 @@ class Fast(Router):
 
 class FastFW(Fast):
     wan = None
+    lan = None
+    wlan = None
     def get_val(self, s):
         return eval(s)
-    
-   
-
-class FastFW100(FastFW):
-    def get_wan(self, html=None):
-        if not self.wan or html:
-            if not html:
-                html = self.gethtml('/userRpm/StatusRpm.htm')
-            arr = self.get_val(re.findall('wanPara = new Array\(([^\0]*?)\);', html, re.IGNORECASE)[0].replace('\r','').replace('\n',''))
-#             print arr
-            self.wan = {'mac':arr[1],'ip':arr[2], 'mask':arr[4], 'gateway':arr[7], 'dns':arr[11]}
+    def get_arrval(self, html, name):
+        arr = self.get_val(re.findall('%s = new Array\(([^\0]*?)\);'%name, html, re.IGNORECASE)[0].replace('\r','').replace('\n',''))
+        return arr
+    def get_wlan(self):
+        if not self.wlan:
+            self.get_all()
+        return self.wlan
+    def get_lan(self):
+        if not self.lan:
+            self.get_all()
+        return self.lan
+    def get_wan(self):
+        if not self.wan:
+            self.get_all()
         return self.wan
+    def get_all(self, html=None):
+        if not html:
+            html = self.gethtml('/userRpm/StatusRpm.htm')
+        arr = self.get_arrval(html, 'wlanPara')
+        self.wlan = {'mac':arr[4], 'ip':arr[5], 'ssid':arr[1]}
+        arr = self.get_arrval(html, 'lanPara')
+        self.lan = {'mac':arr[0], 'ip':arr[1], 'mask':arr[2]}
+        arr = self.get_arrval(html, 'wanPara')
+        self.wan = {'mac':arr[1],'ip':arr[2], 'mask':arr[4], 'gateway':arr[7], 'dns':arr[11]}
+        
     def get_ip(self):
         return self.get_wan()['ip']
     
     def wan_cutdown(self):
         html = self.gethtml('/userRpm/StatusRpm.htm?Disconnect=%E6%96%AD%20%E7%BA%BF1')
+        print html
     
     def wan_connect(self):
         pass
     
     def wan_reconnect(self):
         return self.wan_cutdown() and self.wan_connect()
+    
+    def reboot(self):
+        return self.gethtml('/userRpm/SysRebootRpm.htm?Reboot=%D6%D8%C6%F4%C2%B7%D3%C9%C6%F7')
 
-print FastFW100('notcmcc', '1234567809', routerport=8765).get_ip()
+
+# fw = FastFW('notcmcc', '1234567809', routerport=8765)
+fw = FastFW('trb', '1234567809', routerport=80)
+
+print fw.get_wlan()
+print fw.get_lan()
+print fw.get_wan()
+print fw.reboot()
+
 
 
 
