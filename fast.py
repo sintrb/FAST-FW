@@ -32,6 +32,7 @@ class FastFW(Fast):
     wan = None
     lan = None
     wlan = None
+    
     def get_val(self, s):
         return eval(s)
     def get_arrval(self, html, name):
@@ -59,8 +60,10 @@ class FastFW(Fast):
         arr = self.get_arrval(html, 'wanPara')
         self.wan = {'mac':arr[1],'ip':arr[2], 'mask':arr[4], 'gateway':arr[7], 'dns':arr[11]}
         
-    def get_ip(self):
-        return self.get_wan()['ip']
+    def get_clients(self):
+        html = self.gethtml('/userRpm/AssignedIpAddrListRpm.htm')
+        arr = self.get_arrval(html, 'DHCPDynList')
+        return [{'name':arr[i*4+0], 'mac':arr[i*4+1], 'ip':arr[i*4+2], 'time':arr[i*4+3]} for i in range((len(arr)-2)/4)]
     
     def wan_cutdown(self):
         html = self.gethtml('/userRpm/StatusRpm.htm?Disconnect=%E6%96%AD%20%E7%BA%BF1')
@@ -75,15 +78,18 @@ class FastFW(Fast):
     def reboot(self):
         return self.gethtml('/userRpm/SysRebootRpm.htm?Reboot=%D6%D8%C6%F4%C2%B7%D3%C9%C6%F7')
 
-
+    
 # fw = FastFW('notcmcc', '1234567809', routerport=8765)
 fw = FastFW('trb', '1234567809', routerport=80)
 
 print fw.get_wlan()
 print fw.get_lan()
 print fw.get_wan()
-print fw.reboot()
+# print fw.reboot()
 
+print 'clients:'
+for client in fw.get_clients():
+    print client
 
 
 
