@@ -66,11 +66,12 @@ class FastFW(Fast):
         return [{'name':arr[i*4+0], 'mac':arr[i*4+1], 'ip':arr[i*4+2], 'time':arr[i*4+3]} for i in range((len(arr)-2)/4)]
     
     def wan_cutdown(self):
-        html = self.gethtml('/userRpm/StatusRpm.htm?Disconnect=%E6%96%AD%20%E7%BA%BF1')
+        html = self.gethtml('/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1')
         print html
     
     def wan_connect(self):
-        pass
+        html = self.gethtml('/userRpm/StatusRpm.htm?Connect=%C1%AC%20%BD%D3&wan=1')
+        return html
     
     def wan_reconnect(self):
         return self.wan_cutdown() and self.wan_connect()
@@ -79,13 +80,15 @@ class FastFW(Fast):
         return self.gethtml('/userRpm/SysRebootRpm.htm?Reboot=%D6%D8%C6%F4%C2%B7%D3%C9%C6%F7')
 
     
-# fw = FastFW('notcmcc', '1234567809', routerport=8765)
-fw = FastFW('trb', '1234567809', routerport=80)
+fw = FastFW('notcmcc', '1234567809', routerport=8765)
+# fw = FastFW('trb', '1234567809', routerport=80)
 
 print fw.get_wlan()
 print fw.get_lan()
 print fw.get_wan()
 # print fw.reboot()
+
+print fw.wan_connect()
 
 print 'clients:'
 for client in fw.get_clients():
