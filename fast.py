@@ -80,19 +80,19 @@ class FastFW(Fast):
         return self.gethtml('/userRpm/SysRebootRpm.htm?Reboot=%D6%D8%C6%F4%C2%B7%D3%C9%C6%F7')
 
     
-fw = FastFW('notcmcc', '1234567809', routerport=8765)
+# fw = FastFW('notcmcc', '1234567809', routerport=8765)
 # fw = FastFW('trb', '1234567809', routerport=80)
 
-print fw.get_wlan()
-print fw.get_lan()
-print fw.get_wan()
+# print fw.get_wlan()
+# print fw.get_lan()
+# print fw.get_wan()
 # print fw.reboot()
 
-print fw.wan_connect()
+# print fw.wan_connect()
 
-print 'clients:'
-for client in fw.get_clients():
-    print client
+# print 'clients:'
+# for client in fw.get_clients():
+#    print client
 
 
 
